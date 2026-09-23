@@ -1,5 +1,9 @@
 # Directory Update Log
 
+## 2026-09-23
+* **Version**: Package version set to 0.9.0 in `config.json`, `composer.json`, and `PHP_PCURL_VERSION` (`ext/php_pcurl.h`). phpize/make products removed from `ext/`; installs for Homebrew PHP 8.4 NTS (`php84`) and ZTS (`zhp`) run from a disposable copy so the ship tree stays source-only.
+* **Stubs**: `zephir stubs` for 0.9.0 wrote `ide/0.9.0/` and reverted the clang patches in `ext/kernel/{file,main,require}.c` (`zval_ptr_dtor` / `!= NULL`). Those three files were restored from `clang/kernel/`. `ide/0.1.0/` removed.
+
 ## 2026-09-22
 * **Initialization**: Created `php-io-extensions/pcurl` 0.1.0 from posi's scaffold (LICENSE, installers, `clang/` kernel overlays, `.gitattributes`) and the OKF bundle (index, api/multi, architecture/c-abi, build/zephir-and-pie, five traps). All `status: draft`.
 * **Decision (Angel)**: 1:1 bindings only, methods named after the C call (`curlMultiSocketAction`), callbacks set through `curlMultiSetopt(CURLMOPT_*FUNCTION)`, no `streamFor` helper (userland uses `php://fd/N`), bound set = socket_action, setopt, fdset, poll + timeout, wait, wakeup, assign, strerror.

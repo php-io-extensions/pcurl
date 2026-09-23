@@ -1,0 +1,44 @@
+{
+    "namespace": "pcurl",
+    "name": "pcurl",
+    "extension-name": "pcurl",
+    "description": "libcurl's multi socket API bound 1:1 into PHP on top of ext-curl handles",
+    "author": "Project Saturn Studios, LLC",
+    "version": "0.9.0",
+    "extra-sources": [
+        "src/multi-api.c"
+    ],
+    "requires": {
+        "extensions": [
+            "curl"
+        ]
+    },
+    "optimizer-dirs": [
+        "optimizers"
+    ],
+    "destructors": {
+        "request": [
+            {
+                "include": "src/multi-api.h",
+                "code": "pcurl_multi_api_rshutdown()"
+            }
+        ]
+    },
+    "warnings": {
+        "unused-variable": true,
+        "unused-variable-external": true,
+        "possible-wrong-parameter": true,
+        "possible-wrong-parameter-undefined": true,
+        "nonexistent-function": true,
+        "nonexistent-class": true
+    },
+    "optimizations": {
+        "call-gatherer-pass": true,
+        "check-invalid-reads": true,
+        "constant-folding": true,
+        "local-context-pass": true,
+        "static-constant-class-folding": true,
+        "static-type-inference": true,
+        "static-type-inference-second-pass": true
+    }
+}

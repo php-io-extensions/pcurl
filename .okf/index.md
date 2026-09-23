@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # php-io-extensions/pcurl
 
-PHP extension (Linux + macOS, NTS + ZTS): one Zephir static class `Pcurl\Multi` whose methods are 1:1 bindings for the libcurl multi calls ext-curl does not expose — `curl_multi_socket_action`, the `CURLMOPT_SOCKETFUNCTION`/`TIMERFUNCTION` callbacks, `curl_multi_fdset`, `curl_multi_timeout`, `curl_multi_poll`, `curl_multi_wait`, `curl_multi_wakeup`, `curl_multi_assign`, `curl_multi_strerror`. It works on ext-curl's own `CurlMultiHandle`/`CurlHandle` objects through a thin C ABI in `src/multi-api.{c,h}`. No FFI. Version **0.1.0**.
+PHP extension (Linux + macOS, NTS + ZTS): one Zephir static class `Pcurl\Multi` whose methods are 1:1 bindings for the libcurl multi calls ext-curl does not expose — `curl_multi_socket_action`, the `CURLMOPT_SOCKETFUNCTION`/`TIMERFUNCTION` callbacks, `curl_multi_fdset`, `curl_multi_timeout`, `curl_multi_poll`, `curl_multi_wait`, `curl_multi_wakeup`, `curl_multi_assign`, `curl_multi_strerror`. It works on ext-curl's own `CurlMultiHandle`/`CurlHandle` objects through a thin C ABI in `src/multi-api.{c,h}`. No FFI. Version **0.9.0**.
 
 All concepts are `status: draft` pending Angel's verification.
 

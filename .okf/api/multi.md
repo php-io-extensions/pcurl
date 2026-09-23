@@ -14,7 +14,7 @@ sources:
     resource: /src/multi-api.c
     title: multi-api.c
   - id: stub
-    resource: /ide/0.1.0/Pcurl/Multi.php
+    resource: /ide/0.9.0/Pcurl/Multi.php
     title: IDE stub
 ---
 
