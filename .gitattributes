@@ -1,0 +1,3 @@
+# Keep agent/knowledge docs out of Composer/PIE distribution archives
+.okf/ export-ignore
+AGENTS.md export-ignore

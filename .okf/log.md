@@ -1,0 +1,7 @@
+# Directory Update Log
+
+## 2026-09-22
+* **Initialization**: Created `php-io-extensions/pcurl` 0.1.0 from posi's scaffold (LICENSE, installers, `clang/` kernel overlays, `.gitattributes`) and the OKF bundle (index, api/multi, architecture/c-abi, build/zephir-and-pie, five traps). All `status: draft`.
+* **Decision (Angel)**: 1:1 bindings only, methods named after the C call (`curlMultiSocketAction`), callbacks set through `curlMultiSetopt(CURLMOPT_*FUNCTION)`, no `streamFor` helper (userland uses `php://fd/N`), bound set = socket_action, setopt, fdset, poll + timeout, wait, wakeup, assign, strerror.
+* **Fix (output-validator review)**: registry entries were only freed at RSHUTDOWN, so a freed multi's `*DATA`/`assign` state could leak into a new multi at the same `CURLM*`. Replaced the "hold a strong ref while a `*FUNCTION` is set" scheme with a `free_obj` hook on a copied handler table (unhook → ext-curl free → drop state). Also: `curl_ce` check on `easyh` entries, `FD_SETSIZE` cap in fdset, `;;` in RSHUTDOWN, unused header in the strerror optimizer. Trap `callbacks-hold-the-handle` became `callback-cycles`. Rebuilt in a copy per the playbook: 26/26 smoke on NTS and ZTS, including 200 address-reuse rounds, and the ZTS 4-thread stress still passes.
+* **Build**: first `ext/` generated in place (the tree did not exist yet, by Angel's instruction); installed and smoke-tested on Homebrew PHP 8.4.25 NTS and ZTS (24/24 checks each; ZTS also 4 `parallel\Runtime` threads × 25 transfers).
