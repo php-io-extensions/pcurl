@@ -5,7 +5,7 @@ description: Static 1:1 bindings for libcurl multi calls ext-curl leaves out
 resource: /pcurl/multi.zep
 tags: [pcurl, api, libcurl]
 status: draft
-generated: { by: cursor-agent/claude-opus-5.5, at: "2026-09-22T19:30:00Z" }
+generated: { by: cursor-agent/claude-opus-5.5, at: "2026-09-29T12:00:00Z" }
 sources:
   - id: zep
     resource: /pcurl/multi.zep
@@ -14,7 +14,7 @@ sources:
     resource: /src/multi-api.c
     title: multi-api.c
   - id: stub
-    resource: /ide/0.9.0/Pcurl/Multi.php
+    resource: /ide/0.10.0/Pcurl/Multi.php
     title: IDE stub
 ---
 

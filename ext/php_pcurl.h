@@ -11,7 +11,7 @@
 #include "kernel/globals.h"
 
 #define PHP_PCURL_NAME        "pcurl"
-#define PHP_PCURL_VERSION     "0.9.0"
+#define PHP_PCURL_VERSION     "0.10.0"
 #define PHP_PCURL_EXTNAME     "pcurl"
 #define PHP_PCURL_AUTHOR      "Project Saturn Studios, LLC"
 #define PHP_PCURL_ZEPVERSION  "0.19.0-$Id$"

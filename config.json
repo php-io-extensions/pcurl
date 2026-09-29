@@ -4,7 +4,7 @@
     "extension-name": "pcurl",
     "description": "libcurl's multi socket API bound 1:1 into PHP on top of ext-curl handles",
     "author": "Project Saturn Studios, LLC",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "extra-sources": [
         "src/multi-api.c"
     ],

@@ -1,5 +1,9 @@
 # Directory Update Log
 
+## 2026-09-29
+* **Version**: 0.10.0 in `config.json`, `composer.json`, and `PHP_PCURL_VERSION` (`ext/php_pcurl.h`), for Venusian 0.10's Http driver. Regenerating `ext/` changed no tracked source. `ide/0.10.0/` replaces `ide/0.9.0/`.
+* **Build**: Homebrew PHP 8.4 NTS (`php84`) and ZTS (`zhp`) from a disposable copy; the Pi 5 (PHP 8.4.20 ZTS, libcurl 8.14.1) with `phpize` from the committed `ext/`, installed with `conf.d/40-pcurl.ini`. The framework's Http suite passes on the Pi under epoll, pcurl driver included.
+
 ## 2026-09-23
 * **Version**: Package version set to 0.9.0 in `config.json`, `composer.json`, and `PHP_PCURL_VERSION` (`ext/php_pcurl.h`). phpize/make products removed from `ext/`; installs for Homebrew PHP 8.4 NTS (`php84`) and ZTS (`zhp`) run from a disposable copy so the ship tree stays source-only.
 * **Stubs**: `zephir stubs` for 0.9.0 wrote `ide/0.9.0/` and reverted the clang patches in `ext/kernel/{file,main,require}.c` (`zval_ptr_dtor` / `!= NULL`). Those three files were restored from `clang/kernel/`. `ide/0.1.0/` removed.
