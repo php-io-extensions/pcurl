@@ -3,7 +3,7 @@
     "type": "php-ext",
     "description": "libcurl's multi socket API bound 1:1 into PHP on top of ext-curl handles",
     "license": "MIT",
-    "version": "0.10.1",
+    "version": "0.10.2",
     "authors": [
         {
             "name": "Project Saturn Studios, LLC",

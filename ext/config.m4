@@ -21,14 +21,12 @@ if test "$PHP_PCURL" = "yes"; then
 			PHP_LIBCURL_INCS=`$PKG_CONFIG libcurl --cflags-only-I`
 
 			dnl pcurl hands ext-curl's CURLM* to libcurl, so it must call the libcurl the PHP
-			dnl process already carries, never a second copy. On macOS the shared extension
-			dnl links no libcurl: curl_multi_* resolve at load time from the host, which is
-			dnl Homebrew's libcurl.dylib under Homebrew PHP and the libcurl compiled into a
-			dnl static micro binary (a venusian build). Headers come from pkg-config either way.
-			case $host_os in
-				darwin*) ;;
-				*) PHP_EVAL_LIBLINE($PHP_LIBCURL_LIBS, PCURL_SHARED_LIBADD) ;;
-			esac
+			dnl process already carries, never a second copy. The shared extension links no
+			dnl libcurl on any OS: curl_multi_* resolve at load time from the host, which is the
+			dnl libcurl PHP or its ext-curl links (Homebrew's dylib, the distribution's .so) and
+			dnl the libcurl compiled into a static micro binary (a venusian build). A linked copy
+			dnl on Linux binds pcurl's versioned references to the system .so while ext-curl's
+			dnl handles come from the static one. Headers come from pkg-config either way.
 			PHP_EVAL_INCLINE($PHP_LIBCURL_INCS)
 		else
 			AC_MSG_ERROR(Requested 'libcurl >= 7.68.0' but version of libcurl is $PHP_LIBCURL_VERSION)

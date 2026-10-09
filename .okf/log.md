@@ -1,8 +1,12 @@
 # Directory Update Log
 
+## 2026-10-09
+* **Version**: 0.10.2 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`. No API change; `ide/0.10.1/` stays current. Carries the Linux link fix below, which 0.10.1 shipped without.
+
 ## 2026-10-08
 * **Version**: 0.10.1 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`; `ide/0.10.1/` replaces `ide/0.10.0/`.
 * **Decision reversed (Angel)**: `curlSocketStream(int $s)` added. The 2026-09-22 "no stream helper, userland uses `php://fd/N`" call predates the measurement that PHP serves `php://fd` under the CLI SAPI only: inside a phpmicro binary (`PHP_SAPI` `micro`) the framework's pcurl driver could not wrap curl's sockets, threw from the socket callback, and curl aborted the multi handle (`CURLM_ABORTED_BY_CALLBACK` on every later add). The method is `dup` + `php_stream_fopen_from_fd`, what `php://fd` does without the gate.
+* **Linux link**: the shared extension links no libcurl on Linux either; the `darwin*` case in both `config.m4` files is gone. A linked `libcurl.so.4` made pcurl's versioned references bind to the system library inside a static glibc micro runtime (a `venusian build` for Linux) while ext-curl's handles came from the runtime's libcurl; the first socket action segfaulted. Unversioned references bind to whichever libcurl the process carries.
 * **macOS link**: the shared extension links no libcurl on Darwin (`clang/config.m4`, `ext/config.m4`); `curl_multi_*` resolve from the host at load time, so pcurl always calls the libcurl ext-curl was built with (Homebrew's dylib, or the static one inside a micro binary) and never a second copy.
 
 ## 2026-09-29
