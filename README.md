@@ -17,6 +17,9 @@ All static on `Pcurl\Multi`. Methods with C out-parameters return an array: `res
 | `curlMultiWakeup($m)` | `curl_multi_wakeup` | `int` CURLMcode |
 | `curlMultiAssign($m, int $s, mixed $sockp)` | `curl_multi_assign` | `int` CURLMcode |
 | `curlMultiStrerror(int $code)` | `curl_multi_strerror` | `string` |
+| `curlSocketStream(int $s)` | `php_stream_fopen_from_fd(dup($s))` | `resource` |
+
+`curlSocketStream` is `php://fd/$s` without its CLI-only gate: a stream on a duplicate of the socket curl handed `CURLMOPT_SOCKETFUNCTION`, for a loop to wait on in any SAPI (phpmicro included). curl keeps the socket; closing the stream closes the duplicate. A socket that cannot be duplicated throws.
 
 `$extraFds` mirrors `struct curl_waitfd`: a list of `['fd' => int, 'events' => int]`; each comes back with `revents`.
 

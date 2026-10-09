@@ -12,6 +12,7 @@ PHP_METHOD(Pcurl_Multi, curlMultiWait);
 PHP_METHOD(Pcurl_Multi, curlMultiWakeup);
 PHP_METHOD(Pcurl_Multi, curlMultiAssign);
 PHP_METHOD(Pcurl_Multi, curlMultiStrerror);
+PHP_METHOD(Pcurl_Multi, curlSocketStream);
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_pcurl_multi_curlmultisetopt, 0, 3, IS_LONG, 0)
 	ZEND_ARG_INFO(0, multi)
@@ -59,6 +60,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_pcurl_multi_curlmultistrerror, 0
 	ZEND_ARG_TYPE_INFO(0, code, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_pcurl_multi_curlsocketstream, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, s, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 ZEPHIR_INIT_FUNCS(pcurl_multi_method_entry) {
 	PHP_ME(Pcurl_Multi, curlMultiSetopt, arginfo_pcurl_multi_curlmultisetopt, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Pcurl_Multi, curlMultiSocketAction, arginfo_pcurl_multi_curlmultisocketaction, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -69,5 +74,6 @@ ZEPHIR_INIT_FUNCS(pcurl_multi_method_entry) {
 	PHP_ME(Pcurl_Multi, curlMultiWakeup, arginfo_pcurl_multi_curlmultiwakeup, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Pcurl_Multi, curlMultiAssign, arginfo_pcurl_multi_curlmultiassign, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Pcurl_Multi, curlMultiStrerror, arginfo_pcurl_multi_curlmultistrerror, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Pcurl_Multi, curlSocketStream, arginfo_pcurl_multi_curlsocketstream, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_FE_END
 };

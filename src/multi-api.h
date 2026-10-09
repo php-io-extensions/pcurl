@@ -12,6 +12,7 @@ void      pcurl_multi_wait(zval *return_value, zval *mh, zval *extra_fds, zval *
 zend_long pcurl_multi_wakeup(zval *mh);
 zend_long pcurl_multi_assign(zval *mh, zval *s, zval *sockp);
 void      pcurl_multi_strerror(zval *return_value, zval *code);
+void      pcurl_socket_stream(zval *return_value, zval *s);
 void      pcurl_multi_api_rshutdown(void);
 
 #endif /* PHP_PCURL_MULTI_API_H */

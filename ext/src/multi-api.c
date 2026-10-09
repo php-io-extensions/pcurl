@@ -12,6 +12,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/select.h>
+#include <errno.h>
+#include <unistd.h>
 
 /*
  * ext-curl keeps its structs private. Both begin with the libcurl handle, and
@@ -476,6 +478,32 @@ zend_long pcurl_multi_assign(zval *mh, zval *s, zval *sockp)
 void pcurl_multi_strerror(zval *return_value, zval *code)
 {
     RETVAL_STRING(curl_multi_strerror((CURLMcode) zval_get_long(code)));
+}
+
+/*
+ * A PHP stream on a duplicate of curl's socket s, for a loop to wait on: what
+ * php://fd/<s> does, minus its CLI-only gate. curl keeps the socket; closing
+ * the stream closes only the duplicate.
+ */
+void pcurl_socket_stream(zval *return_value, zval *s)
+{
+    long sock = (long) zval_get_long(s);
+    int fd = dup((int) sock);
+    php_stream *stream;
+
+    if (fd < 0) {
+        zend_throw_exception_ex(zend_ce_exception, 0, "curl socket %ld cannot be duplicated: %s", sock, strerror(errno));
+        RETURN_NULL();
+    }
+
+    stream = php_stream_fopen_from_fd(fd, "r+", NULL);
+    if (!stream) {
+        close(fd);
+        zend_throw_exception_ex(zend_ce_exception, 0, "no stream on curl socket %ld", sock);
+        RETURN_NULL();
+    }
+
+    php_stream_to_zval(stream, return_value);
 }
 
 void pcurl_multi_api_rshutdown(void)

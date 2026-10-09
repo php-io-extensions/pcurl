@@ -70,4 +70,13 @@ class Multi
 
         return result;
     }
+
+    public static function curlSocketStream(int s) -> resource
+    {
+        var result;
+
+        let result = socket_stream(s);
+
+        return result;
+    }
 }

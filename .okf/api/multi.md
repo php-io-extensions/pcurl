@@ -33,6 +33,7 @@ Every method is named after the C call it binds and takes ext-curl's `CurlMultiH
 | `curlMultiWakeup($m)` | `curl_multi_wakeup` | `int` |
 | `curlMultiAssign($m, int $s, mixed $sockp)` | `curl_multi_assign` | `int` |
 | `curlMultiStrerror(int $code)` | `curl_multi_strerror` | `string` |
+| `curlSocketStream(int $s)` | `php_stream_fopen_from_fd(dup($s), "r+")` | `resource` |
 
 `extra_fds` in and out mirrors `struct curl_waitfd`: `[['fd' => int, 'events' => int], …]` → each entry gains `revents`. A missing `events` key means 0; a missing `fd` throws.
 
@@ -53,4 +54,4 @@ A callback return of `null` counts as 0. A throw returns `-1` to libcurl, and th
 
 # Userland conventions
 
-libcurl constants are the caller's (int-backed enums), e.g. `CURL_SOCKET_TIMEOUT = -1`, `CURL_POLL_IN/OUT/INOUT/REMOVE = 1/2/3/4`, `CURL_CSELECT_IN/OUT/ERR = 1/2/4`. To watch a socket in a PHP loop, `fopen("php://fd/$s", 'r+')` gives a dup'd stream usable with `stream_select` (CLI SAPI); close it on `CURL_POLL_REMOVE`.
+libcurl constants are the caller's (int-backed enums), e.g. `CURL_SOCKET_TIMEOUT = -1`, `CURL_POLL_IN/OUT/INOUT/REMOVE = 1/2/3/4`, `CURL_CSELECT_IN/OUT/ERR = 1/2/4`. To watch a socket in a PHP loop, `curlSocketStream($s)` gives a dup'd stream usable with `stream_select` in any SAPI (`php://fd/$s` does the same under CLI only); close it on `CURL_POLL_REMOVE`.

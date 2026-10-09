@@ -207,3 +207,23 @@ PHP_METHOD(Pcurl_Multi, curlMultiStrerror)
 	RETURN_CCTOR(&result);
 }
 
+PHP_METHOD(Pcurl_Multi, curlSocketStream)
+{
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	zval *s_param = NULL, result, _0;
+	zend_long s;
+
+	ZVAL_UNDEF(&result);
+	ZVAL_UNDEF(&_0);
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(s)
+	ZEND_PARSE_PARAMETERS_END();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+	zephir_fetch_params(1, 1, 0, &s_param);
+	ZVAL_LONG(&_0, s);
+	ZEPHIR_INIT_VAR(&result);
+	pcurl_socket_stream(&result, &_0);
+	RETURN_CCTOR(&result);
+}
+
