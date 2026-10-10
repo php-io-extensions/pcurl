@@ -30,5 +30,21 @@
                 "needs-value": false
             }
         ]
+    },
+    "extra": {
+        "venusian": {
+            "system": {
+                "apt": {
+                    "build": [
+                        "libcurl4-openssl-dev"
+                    ]
+                },
+                "brew": {
+                    "build": [
+                        "curl"
+                    ]
+                }
+            }
+        }
     }
 }

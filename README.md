@@ -51,6 +51,7 @@ $r = Pcurl\Multi::curlMultiSocketAction($m, -1, 0);                             
 * PHP 8.1+ (NTS or ZTS) with ext-curl loaded
 * libcurl >= 7.68 — **the same libcurl ext-curl is linked against**
 * Linux or macOS
+* `venusian build` reads the system packages from `extra.venusian.system` in composer.json: apt packages to build with and the run-time ones a `.deb` depends on or recommends, and the Homebrew ones.
 
 ## Compilation Requirements
 

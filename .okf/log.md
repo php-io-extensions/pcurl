@@ -1,6 +1,8 @@
 # Directory Update Log
 
 ## 2026-10-09
+
+* `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.
 * **Version**: 0.10.2 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`. No API change; `ide/0.10.1/` stays current. Carries the Linux link fix below, which 0.10.1 shipped without.
 
 ## 2026-10-08
