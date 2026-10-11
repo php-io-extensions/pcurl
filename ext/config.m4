@@ -15,7 +15,7 @@ if test "$PHP_PCURL" = "yes"; then
 		PHP_LIBCURL_VERSION=`$PKG_CONFIG libcurl --modversion`
 		PHP_LIBCURL_PREFIX=`$PKG_CONFIG libcurl --variable=prefix`
 
-		if $PKG_CONFIG --atleast-version=7.68.0 libcurl; then
+		if $PKG_CONFIG --atleast-version=7.69.0 libcurl; then
 			AC_MSG_RESULT([found version $PHP_LIBCURL_VERSION, under $PHP_LIBCURL_PREFIX])
 			PHP_LIBCURL_LIBS=`$PKG_CONFIG libcurl --libs`
 			PHP_LIBCURL_INCS=`$PKG_CONFIG libcurl --cflags-only-I`
@@ -29,7 +29,7 @@ if test "$PHP_PCURL" = "yes"; then
 			dnl handles come from the static one. Headers come from pkg-config either way.
 			PHP_EVAL_INCLINE($PHP_LIBCURL_INCS)
 		else
-			AC_MSG_ERROR(Requested 'libcurl >= 7.68.0' but version of libcurl is $PHP_LIBCURL_VERSION)
+			AC_MSG_ERROR(Requested 'libcurl >= 7.69.0' but version of libcurl is $PHP_LIBCURL_VERSION)
 		fi
 	else
 		AC_MSG_ERROR(Unable to find libcurl installation)

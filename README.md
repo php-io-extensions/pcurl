@@ -31,7 +31,7 @@ All static on `Pcurl\Multi`. Methods with C out-parameters return an array: `res
 * `CURLMOPT_TIMERFUNCTION` (20004): `fn (CurlMultiHandle $multi, int $timeoutMs, mixed $clientp): int`
 * `CURLMOPT_SOCKETDATA` (10002) / `CURLMOPT_TIMERDATA` (10005): any PHP value, handed back as `$clientp`
 
-`$socketp` is whatever you last passed to `curlMultiAssign` for that socket. A callback that throws returns `-1` to libcurl and the exception surfaces from the call that triggered it. Any other object/function option returns `CURLM_UNKNOWN_OPTION`.
+`$socketp` is whatever you last passed to `curlMultiAssign` for that socket. A callback that throws returns `-1` to libcurl and the exception surfaces from the call that triggered it. On libcurl older than 8.16, a timer callback that throws or returns `-1` inside `curl_multi_add_handle` leaves that multi corrupt (libcurl keeps the rejected handle in its timer tree), so the next call on it hangs or crashes. Any other object/function option returns `CURLM_UNKNOWN_OPTION`.
 
 pcurl's per-handle state is dropped when the `CurlMultiHandle` is freed. The cycle collector can't see the callbacks pcurl stores, though, so a callback that captures its own multi (`use ($m)`) keeps it alive until you set that option back to `null` or the request ends.
 
@@ -51,7 +51,7 @@ $r = Pcurl\Multi::curlMultiSocketAction($m, -1, 0);                             
 ## Requirements
 
 * PHP 8.1+ (NTS or ZTS) with ext-curl loaded
-* libcurl >= 7.68 — **the same libcurl ext-curl is linked against**
+* libcurl >= 7.69 — **the same libcurl ext-curl is linked against**
 * Linux or macOS
 * `venusian build` reads the system packages from `extra.venusian.system` in composer.json: apt packages to build with and the run-time ones a `.deb` depends on or recommends, and the Homebrew ones.
 
@@ -71,6 +71,15 @@ Or from a checkout on macOS (`PHP_BIN` picks the build, e.g. a ZTS one):
 ```sh
 bash install-macos.sh
 PHP_BIN=/opt/homebrew/opt/php@8.4-zts/bin/php bash install-macos.sh
+```
+
+## Tests
+
+Pest v4, against a PHP built-in server the suite starts on a free local port. Needs pcurl loaded:
+
+```sh
+composer install
+php -d extension=/path/to/pcurl.so vendor/bin/pest   # or plain vendor/bin/pest once installed
 ```
 
 ## License

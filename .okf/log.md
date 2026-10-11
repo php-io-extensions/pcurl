@@ -1,5 +1,12 @@
 # Directory Update Log
 
+## 2026-10-11
+
+* **Tests**: Pest v4 suite in `tests/` (`phpunit.xml`, `require-dev` `pestphp/pest`), 73 tests over every `Pcurl\Multi` method. Transfers run against a PHP built-in server on `tests/fixtures`, driven through `CURLMOPT_SOCKETFUNCTION`/`TIMERFUNCTION` + `curlSocketStream` + `stream_select` (`drive()` in `tests/Pest.php`, which installs its callbacks before adding handles). CI runs it after the load check. Green on Homebrew PHP 8.4 NTS and ZTS (libcurl 8.22.0) and the Pi 5 (PHP 8.4.20 ZTS, libcurl 8.14.1, one test skipped, see below), each against 0.10.2 built from a copy of `ext/`.
+* **libcurl < 8.16 add_handle bug**: `curl_multi_add_handle` inserts the easy into the multi's timer tree, then calls the timer callback; when that callback fails, 8.15 and older drop the easy from the transfer table but leave its timer node, and the next call on the multi hangs or segfaults (reproduced on the Pi, libcurl 8.14.1). 8.16.0 replaced the insert with dirty marking. A pcurl timer callback that throws or returns -1 inside `curl_multi_add_handle` hits it. The suite's test for that path skips below 8.16.
+* **libcurl floor 7.69.0** (was 7.68.0) in `clang/config.m4`, `ext/config.m4`, README: `src/multi-api.c` returns `CURLM_BAD_FUNCTION_ARGUMENT`, which libcurl added in 7.69.0, so 7.68 passed configure and failed to compile. The suite skips its `CURLM_ABORTED_BY_CALLBACK` (libcurl 7.81) assertions below 7.81.
+* **libcurl behaviour the suite pins**: the timer callback fires only when the timeout libcurl wants changes (8.14 reports -1 while a connect waits on its socket, so an unchanged -1 is never repeated); `curl_multi_wait` with no descriptor returns at once while `curl_multi_poll` sleeps the timeout; a multi call made inside a pcurl callback returns `CURLM_RECURSIVE_API_CALL` (8); a callback returning `-1` or throwing leaves libcurl answering `CURLM_ABORTED_BY_CALLBACK` (11) to every later add and socket action on that multi.
+
 ## 2026-10-09
 
 * `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.

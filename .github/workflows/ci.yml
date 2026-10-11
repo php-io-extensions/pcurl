@@ -23,7 +23,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: none
+          tools: composer
         env:
           phpts: ${{ matrix.ts == 'zts' && 'ts' || 'nts' }}
 
@@ -55,3 +55,9 @@ jobs:
           CURL=""; php -n -m | grep -qx curl || CURL="-d extension=curl"
           php -n $CURL -d extension="$PWD/modules/pcurl.so" -r 'exit(extension_loaded("pcurl") ? 0 : 1);'
           php -n $CURL -d extension="$PWD/modules/pcurl.so" --ri pcurl
+
+      - name: Test
+        # The ini stays on here: Pest needs the extensions setup-php enables (mbstring, dom, tokenizer, ...).
+        run: |
+          composer install --no-interaction --no-progress
+          php -d extension="$PWD/ext/modules/pcurl.so" vendor/bin/pest

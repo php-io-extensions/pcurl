@@ -5,7 +5,7 @@ description: Static 1:1 bindings for libcurl multi calls ext-curl leaves out
 resource: /pcurl/multi.zep
 tags: [pcurl, api, libcurl]
 status: draft
-generated: { by: cursor-agent/claude-opus-5.5, at: "2026-09-29T12:00:00Z" }
+generated: { by: claude-code/claude-opus-5.5, at: "2026-10-11T12:00:00Z" }
 sources:
   - id: zep
     resource: /pcurl/multi.zep
@@ -46,7 +46,7 @@ Every method is named after the C call it binds and takes ext-curl's `CurlMultiH
 * `null` uninstalls a function; a non-callable returns `CURLM_BAD_FUNCTION_ARGUMENT` (10) and leaves the old one in place.
 * Any other object/function option → `CURLM_UNKNOWN_OPTION` (6). `CURLMOPT_PUSHFUNCTION` stays with ext-curl's `curl_multi_setopt`.
 
-A callback return of `null` counts as 0. A throw returns `-1` to libcurl, and the exception propagates out of the pcurl or ext-curl call that fired it.
+A callback return of `null` counts as 0. A throw returns `-1` to libcurl, and the exception propagates out of the pcurl or ext-curl call that fired it. On libcurl older than 8.16, a timer callback that fails (throw or `-1`) inside `curl_multi_add_handle` leaves the rejected easy in libcurl's timer tree; the next call on that multi hangs or crashes. Fixed upstream in 8.16.0.
 
 # Errors
 

@@ -5,7 +5,7 @@ description: How ext/ is generated, overlaid, compiled and installed for NTS and
 resource: /install-macos.sh
 tags: [pcurl, build, zephir, pie, zts]
 status: draft
-generated: { by: cursor-agent/claude-opus-5.5, at: "2026-09-22T19:30:00Z" }
+generated: { by: claude-code/claude-opus-5.5, at: "2026-10-11T12:00:00Z" }
 sources:
   - id: install
     resource: /install-macos.sh
@@ -33,9 +33,13 @@ sources:
 2. `zephir fullclean` → `zephir stubs` → `pre-install.sh` (`zephir generate`, copy `src/` → `ext/src/`, copy `clang/*` over `ext/`).[^pre] Stubs must come **before** pre-install (see traps).
 3. `phpize && ./configure --enable-pcurl && make`, copy `pcurl.so`, `codesign --force --sign -`, write `40-pcurl.ini`, verify `Pcurl\Multi` exists.
 
-`clang/config.m4` replaces Zephir's generated one. It adds pkg-config `libcurl >= 7.68.0` (flags plus `PCURL_SHARED_LIBADD`), the `src` build dir, `PHP_ADD_EXTENSION_DEP([pcurl], [curl])` and posi's clang `-Wno-*` CFLAGS.[^m4] `clang/kernel/*.c` are posi's PHP 8.4/clang kernel patches.
+`clang/config.m4` replaces Zephir's generated one. It adds pkg-config `libcurl >= 7.69.0` (flags plus `PCURL_SHARED_LIBADD`), the `src` build dir, `PHP_ADD_EXTENSION_DEP([pcurl], [curl])` and posi's clang `-Wno-*` CFLAGS.[^m4] `clang/kernel/*.c` are posi's PHP 8.4/clang kernel patches.
 
 Run the installer once per PHP build: each run rebuilds `ext/` for that php-config. Verified on Homebrew PHP 8.4.25 NTS and ZTS.
+
+# Tests
+
+Pest v4 in `tests/`: `composer install`, then `php -d extension=<built pcurl.so> vendor/bin/pest` (plain `vendor/bin/pest` once installed). `tests/Pest.php` starts a PHP built-in server on `tests/fixtures` at a free port and drives transfers through the socket API. CI runs it after the load check.
 
 # Known noise
 

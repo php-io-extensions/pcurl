@@ -27,3 +27,9 @@ ext/src/.libs/
 ext/**/*.dep
 ext/**/*.lo
 ext/**/*.la
+
+# Test suite
+/vendor/
+/composer.lock
+/.phpunit.cache/
+/.phpunit.result.cache
