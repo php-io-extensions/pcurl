@@ -1,5 +1,7 @@
 # pcurl - libcurl's multi socket API for PHP
 
+[![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/pcurl/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/pcurl/actions/workflows/ci.yml)
+
 1:1 bindings for the parts of libcurl's multi interface that ext-curl leaves out, operating on ext-curl's own `CurlMultiHandle` / `CurlHandle` objects. No FFI, no opinions: each method is one `curl_multi_*` call, and libcurl constants (`CURLMOPT_*`, `CURL_POLL_*`, `CURL_CSELECT_*`, `CURL_SOCKET_TIMEOUT`) stay in your code.
 
 ## API

@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: PHP ${{ matrix.php }} ${{ matrix.ts }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+        php: ['8.4', '8.5']
+        ts: [nts, zts]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+        env:
+          phpts: ${{ matrix.ts == 'zts' && 'ts' || 'nts' }}
+
+      - name: Install libcurl headers (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libcurl4-openssl-dev
+
+      - name: Install libcurl headers (macOS)
+        # Homebrew's curl is keg-only: its libcurl.pc is outside pkg-config's default path.
+        if: runner.os == 'macOS'
+        run: |
+          brew install curl pkgconf
+          echo "PKG_CONFIG_PATH=$(brew --prefix curl)/lib/pkgconfig" >> "$GITHUB_ENV"
+
+      - name: Build
+        # ext/ holds the Zephir-generated sources as committed: the tree PIE and the installers build.
+        working-directory: ext
+        run: |
+          phpize
+          ./configure --enable-pcurl
+          make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+
+      - name: Load
+        # pcurl requires ext-curl; -n drops the ini that enables it where PHP ships it as a shared extension.
+        working-directory: ext
+        run: |
+          CURL=""; php -n -m | grep -qx curl || CURL="-d extension=curl"
+          php -n $CURL -d extension="$PWD/modules/pcurl.so" -r 'exit(extension_loaded("pcurl") ? 0 : 1);'
+          php -n $CURL -d extension="$PWD/modules/pcurl.so" --ri pcurl
