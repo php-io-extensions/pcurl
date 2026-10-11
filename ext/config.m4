@@ -43,7 +43,7 @@ if test "$PHP_PCURL" = "yes"; then
 
 	AC_DEFINE(HAVE_PCURL, 1, [Whether you have Pcurl])
 	CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types -Wno-incompatible-pointer-types -Wno-pointer-compare -Wno-error=int-conversion"
-	pcurl_sources="pcurl.c kernel/main.c kernel/memory.c kernel/exception.c kernel/debug.c kernel/backtrace.c kernel/object.c kernel/array.c kernel/string.c kernel/fcall.c kernel/require.c kernel/file.c kernel/operators.c kernel/math.c kernel/concat.c kernel/variables.c kernel/filter.c kernel/iterator.c kernel/time.c kernel/exit.c pcurl/multi.zep.c src/multi-api.c"
+	pcurl_sources="pcurl.c kernel/main.c kernel/memory.c kernel/exception.c kernel/debug.c kernel/backtrace.c kernel/object.c kernel/array.c kernel/string.c kernel/fcall.c kernel/require.c kernel/file.c kernel/operators.c kernel/math.c kernel/concat.c kernel/variables.c kernel/filter.c kernel/iterator.c kernel/time.c kernel/exit.c kernel/generator.c kernel/buffer.c pcurl/multi.zep.c src/multi-api.c"
 	PHP_NEW_EXTENSION(pcurl, $pcurl_sources, $ext_shared,,  $PHP_LIBCURL_INCS )
 	PHP_ADD_EXTENSION_DEP([pcurl], [curl])
 	PHP_ADD_BUILD_DIR([$ext_builddir/kernel/])

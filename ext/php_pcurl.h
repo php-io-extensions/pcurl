@@ -14,8 +14,12 @@
 #define PHP_PCURL_VERSION     "0.10.2"
 #define PHP_PCURL_EXTNAME     "pcurl"
 #define PHP_PCURL_AUTHOR      "Project Saturn Studios, LLC"
-#define PHP_PCURL_ZEPVERSION  "0.19.0-$Id$"
+#define PHP_PCURL_ZEPVERSION  "1.6.1-$Id$"
 #define PHP_PCURL_DESCRIPTION "libcurl's multi socket API bound 1:1 into PHP on top of ext-curl handles"
+
+
+
+
 
 
 
@@ -27,6 +31,9 @@ ZEND_BEGIN_MODULE_GLOBALS(pcurl)
 	HashTable *fcache;
 
 	zephir_fcall_cache_entry *scache[ZEPHIR_MAX_CACHE_SLOTS];
+
+	/* Inline property cache slots (issue #1902): [ce, offset, prop_info] per site */
+	void *pcache[ZEPHIR_MAX_PROPERTY_CACHE_SLOTS * ZEPHIR_PROPERTY_CACHE_SLOT_SIZE];
 
 	/* Cache enabled */
 	unsigned int cache_enabled;

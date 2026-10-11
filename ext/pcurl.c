@@ -32,6 +32,18 @@ PHP_INI_BEGIN()
 	
 PHP_INI_END()
 
+/**
+ * Directives whose globals are put back to their php.ini value at the start
+ * of every request. globals_set() writes the struct member directly, so the
+ * engine cannot restore it the way it restores an ini_set(); without this the
+ * value would survive into the next request. Module-scoped globals are
+ * deliberately absent: they are set up once per process.
+ */
+static const char *const zephir_request_ini_entries[] = {
+	
+	NULL
+};
+
 static PHP_MINIT_FUNCTION(pcurl)
 {
 	REGISTER_INI_ENTRIES();
@@ -41,15 +53,25 @@ static PHP_MINIT_FUNCTION(pcurl)
 	return SUCCESS;
 }
 
-#ifndef ZEPHIR_RELEASE
 static PHP_MSHUTDOWN_FUNCTION(pcurl)
 {
+#ifndef ZEPHIR_RELEASE
 	
 	zephir_deinitialize_memory();
+#endif
+	/**
+	 * Both of these have to run in every build, release included.
+	 *
+	 * module_destructor() unregisters a module's INI entries for it only when
+	 * the module has no MSHUTDOWN of its own, so declaring one takes over that
+	 * duty; skipping it leaves zend_ini_entry records pointing into an
+	 * unloaded extension. And the kernel installs process-wide hooks that
+	 * point into this extension and must not outlive it.
+	 */
 	UNREGISTER_INI_ENTRIES();
+	zephir_module_shutdown();
 	return SUCCESS;
 }
-#endif
 
 /**
  * Initialize globals on each request or each thread started
@@ -66,6 +88,9 @@ static void php_zephir_init_globals(zend_pcurl_globals *pcurl_globals)
 
 	/* Static cache */
 	memset(pcurl_globals->scache, '\0', sizeof(zephir_fcall_cache_entry*) * ZEPHIR_MAX_CACHE_SLOTS);
+
+	/* Inline property cache (per-request reset defeats stale-ce/ABA reuse) */
+	memset(pcurl_globals->pcache, '\0', sizeof(void*) * ZEPHIR_MAX_PROPERTY_CACHE_SLOTS * ZEPHIR_PROPERTY_CACHE_SLOT_SIZE);
 
 	
 	
@@ -85,6 +110,7 @@ static PHP_RINIT_FUNCTION(pcurl)
 	pcurl_globals_ptr = ZEPHIR_VGLOBAL;
 
 	php_zephir_init_globals(pcurl_globals_ptr);
+	zephir_ini_activate_globals(zephir_request_ini_entries);
 	zephir_initialize_memory(pcurl_globals_ptr);
 
 	
@@ -150,11 +176,7 @@ zend_module_entry pcurl_module_entry = {
 	PHP_PCURL_EXTNAME,
 	php_pcurl_functions,
 	PHP_MINIT(pcurl),
-#ifndef ZEPHIR_RELEASE
 	PHP_MSHUTDOWN(pcurl),
-#else
-	NULL,
-#endif
 	PHP_RINIT(pcurl),
 	PHP_RSHUTDOWN(pcurl),
 	PHP_MINFO(pcurl),

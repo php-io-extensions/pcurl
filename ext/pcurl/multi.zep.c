@@ -118,7 +118,7 @@ PHP_METHOD(Pcurl_Multi, curlMultiPoll)
 	ZVAL_UNDEF(&extraFds);
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_ZVAL(multi)
-		Z_PARAM_ARRAY(extraFds)
+		ZEPHIR_Z_PARAM_ARRAY(extraFds, extraFds_param)
 		Z_PARAM_LONG(timeoutMs)
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
@@ -144,7 +144,7 @@ PHP_METHOD(Pcurl_Multi, curlMultiWait)
 	ZVAL_UNDEF(&extraFds);
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_ZVAL(multi)
-		Z_PARAM_ARRAY(extraFds)
+		ZEPHIR_Z_PARAM_ARRAY(extraFds, extraFds_param)
 		Z_PARAM_LONG(timeoutMs)
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
