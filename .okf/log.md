@@ -1,5 +1,11 @@
 # Directory Update Log
 
+## 2026-10-12
+
+* **Version**: 0.10.5 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`. No API change; `ide/0.10.5/` generated with `zephir stubs`, identical to `ide/0.10.1/`. Steps past the 0.10.3 and 0.10.4 numbers to line up with the sibling extensions.
+* **README**: rewritten on the php-io-extensions template (header badges, two-part basic usage, requirements table, PIE / install script / phpize install paths, API, constants the caller keeps, OKF section, suite run). The usage example and the suite count (73 passed, 382 assertions) were run against a build from a copy of `ext/` on Homebrew PHP 8.4 NTS, libcurl 8.22.0.
+* **SECURITY.md** added: pre-1.0 support table, private reporting, and the security model (handle class check, callback state lifetime, `dup` in `curlSocketStream`, `extra_fds` validation, no linked libcurl).
+
 ## 2026-10-11
 
 * **Tests**: Pest v4 suite in `tests/` (`phpunit.xml`, `require-dev` `pestphp/pest`), 73 tests over every `Pcurl\Multi` method. Transfers run against a PHP built-in server on `tests/fixtures`, driven through `CURLMOPT_SOCKETFUNCTION`/`TIMERFUNCTION` + `curlSocketStream` + `stream_select` (`drive()` in `tests/Pest.php`, which installs its callbacks before adding handles). CI runs it after the load check. Green on Homebrew PHP 8.4 NTS and ZTS (libcurl 8.22.0) and the Pi 5 (PHP 8.4.20 ZTS, libcurl 8.14.1, one test skipped, see below), each against 0.10.2 built from a copy of `ext/`.
