@@ -1,5 +1,9 @@
 # Directory Update Log
 
+## 2026-10-14
+
+* **TimerCallbackTest vs libcurl 8.5**: Ubuntu 24.04 CI (libcurl 8.5.0) failed 4 tests that assumed `curlMultiSocketAction(CURL_SOCKET_TIMEOUT)` always invokes `CURLMOPT_TIMERFUNCTION`. It doesn't: 8.5's `multi_socket` memsets `timer_lastcall` to `{0,0}` on `CURL_SOCKET_TIMEOUT`, then `Curl_update_timer` skips the callback when the new timeout is `-1` (already "none"). A localhost transfer with no `CURLOPT_TIMEOUT` looks exactly like that after `EXPIRE_RUN_NOW` is consumed — add_handle still fires `0`, `curl_multi_exec` still fires, completion never sends `-1`. 8.11 (`a58b50f`) split that bookkeeping into `last_expire_ts` (cleared) and `last_timeout_ms` (kept), so the same TIMEOUT call reports `-1`; Homebrew 8.22 and the Pi's 8.14.1 follow that path and were green. The tests now put `CURLOPT_TIMEOUT_MS` on the easy so 8.5 has an expire left to report. C unchanged: the trampoline was firing whenever libcurl asked.
+
 ## 2026-10-12
 
 * **Version**: 0.10.5 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`. No API change; `ide/0.10.5/` generated with `zephir stubs`, identical to `ide/0.10.1/`. Steps past the 0.10.3 and 0.10.4 numbers to line up with the sibling extensions.

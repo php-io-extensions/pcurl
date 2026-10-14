@@ -27,7 +27,7 @@ it('fires with the same CurlMultiHandle, a timeout in ms and $clientp when a han
 
 it('is asked to cancel with -1 once the transfer completes', function (): void {
     $timeouts = [];
-    $easy = easyFor('/cancel');
+    $easy = easyWithTimeout('/cancel');
     drive($this->multi, [$easy], null, function (CurlMultiHandle $m, int $timeoutMs) use (&$timeouts): void {
         $timeouts[] = $timeoutMs;
     });
@@ -38,14 +38,30 @@ it('is asked to cancel with -1 once the transfer completes', function (): void {
 });
 
 /*
- * libcurl calls the timer callback only when the timeout it wants changes. Each test below installs a
- * no-op callback before adding the handle, so libcurl has a recorded timeout (0) that the next call
- * moves, then swaps in the callback under test.
+ * libcurl calls TIMERFUNCTION only when the timeout it wants changes.
+ *
+ * curl_multi_socket_action(CURL_SOCKET_TIMEOUT) on libcurl 8.5 (Ubuntu 24.04) memsets
+ * timer_lastcall to {0,0} first, then skips the callback if the new timeout is -1 — which
+ * is what a localhost transfer looks like once RUN_NOW has been consumed and nothing else
+ * is in the expire tree. 8.11+ keeps last_timeout_ms across that memset, so the same call
+ * reports -1 even without an easy timeout.
+ *
+ * CURLOPT_TIMEOUT_MS leaves an expire in the tree: TIMEOUT then reports the remaining ms,
+ * and completion reports -1. Each test below installs a no-op callback before adding that
+ * easy, so libcurl records 0, then swaps in the callback under test for the next change.
  */
+function easyWithTimeout(string $path): CurlHandle
+{
+    $easy = easyFor($path);
+    curl_setopt($easy, CURLOPT_TIMEOUT_MS, 5_000);
+
+    return $easy;
+}
+
 function multiWithPendingTransfer(CurlMultiHandle $multi, string $path): void
 {
     Multi::curlMultiSetopt($multi, CURLMOPT_TIMERFUNCTION, fn (): int => 0);
-    curl_multi_add_handle($multi, easyFor($path));
+    curl_multi_add_handle($multi, easyWithTimeout($path));
 }
 
 it('treats a null return as 0, so libcurl carries on', function (): void {
