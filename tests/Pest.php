@@ -81,11 +81,16 @@ function localServer(): string
     throw new RuntimeException("built-in server never listened on {$address}");
 }
 
-/** An easy handle for "$path" on the local server that keeps its body for curl_multi_getcontent(). */
+/**
+ * An easy handle for "$path" on the local server that keeps its body for curl_multi_getcontent().
+ * The transfer timeout keeps an expiry pending in libcurl: before 8.10.0, a CURL_SOCKET_TIMEOUT action
+ * that leaves none pending skips the timer callback, which the timer tests observe.
+ */
 function easyFor(string $path): CurlHandle
 {
     $easy = curl_init(localServer() . $path);
     curl_setopt($easy, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($easy, CURLOPT_TIMEOUT_MS, 30_000);
 
     return $easy;
 }

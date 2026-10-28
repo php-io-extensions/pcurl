@@ -5,7 +5,7 @@ description: Static 1:1 bindings for libcurl multi calls ext-curl leaves out
 resource: /pcurl/multi.zep
 tags: [pcurl, api, libcurl]
 status: draft
-generated: { by: claude-code/claude-opus-5.5, at: "2026-10-11T12:00:00Z" }
+generated: { by: claude-code/claude-opus-5.5, at: "2026-10-28T19:30:00Z" }
 sources:
   - id: zep
     resource: /pcurl/multi.zep
@@ -16,6 +16,15 @@ sources:
   - id: stub
     resource: /ide/0.11.0/Pcurl/Multi.php
     title: IDE stub
+  - id: curl-8-5
+    resource: https://github.com/curl/curl/blob/curl-8_5_0/lib/multi.c
+    title: libcurl 8.5.0 lib/multi.c (multi_socket clears timer_lastcall; Curl_update_timer)
+  - id: curl-14561
+    resource: https://github.com/curl/curl/commit/a58b50fca6
+    title: curl a58b50f, PR 14561, first released in 8.10.0
+  - id: pest
+    resource: /tests/Pest.php
+    title: easyFor() in the Pest suite
 ---
 
 # Shape
@@ -47,6 +56,8 @@ Every method is named after the C call it binds and takes ext-curl's `CurlMultiH
 * Any other object/function option → `CURLM_UNKNOWN_OPTION` (6). `CURLMOPT_PUSHFUNCTION` stays with ext-curl's `curl_multi_setopt`.
 
 A callback return of `null` counts as 0. A throw returns `-1` to libcurl, and the exception propagates out of the pcurl or ext-curl call that fired it. On libcurl older than 8.16, a timer callback that fails (throw or `-1`) inside `curl_multi_add_handle` leaves the rejected easy in libcurl's timer tree; the next call on that multi hangs or crashes. Fixed upstream in 8.16.0.
+
+On libcurl older than 8.10.0, `curlMultiSocketAction($m, CURL_SOCKET_TIMEOUT, 0)` clears libcurl's record of the last timeout it reported, and when no expiry is left pending afterwards the timer callback is not called at all: no `-1`, and no chance for the callback to return `-1` or throw.[^curl-8-5] 8.10.0 keeps the last reported timeout across that action and sends the `-1`.[^curl-14561] A loop that drops its deadline when the timer fires is unaffected. A transfer timeout (`CURLOPT_TIMEOUT_MS`) keeps an expiry pending until the transfer finishes, so the callback fires the same way on every version; the suite's handles set one for that reason.[^pest]
 
 # Errors
 

@@ -222,7 +222,7 @@ Every method is static on `Pcurl\Multi`, named after the libcurl call it binds, 
 
 `null` uninstalls a callback. A value that is not callable returns `CURLM_BAD_FUNCTION_ARGUMENT` (`10`) and leaves the old one in place. Any other pointer or function option, `CURLMOPT_PUSHFUNCTION` included, returns `CURLM_UNKNOWN_OPTION` (`6`): that one stays with ext-curl's `curl_multi_setopt()`.
 
-A callback that returns `null` counts as `0`. One that throws returns `-1` to libcurl and the exception surfaces from the pcurl or ext-curl call that fired it; libcurl then answers `CURLM_ABORTED_BY_CALLBACK` (`11`) to every later add and socket action on that multi, as its documentation says. A multi call made from inside a callback returns `CURLM_RECURSIVE_API_CALL` (`8`). On libcurl older than 8.16.0, a timer callback that fails inside `curl_multi_add_handle()` leaves the rejected handle in libcurl's timer tree and the next call on that multi hangs or crashes; 8.16.0 fixed it upstream, and the suite skips that test below it.
+A callback that returns `null` counts as `0`. One that throws returns `-1` to libcurl and the exception surfaces from the pcurl or ext-curl call that fired it; libcurl then answers `CURLM_ABORTED_BY_CALLBACK` (`11`) to every later add and socket action on that multi, as its documentation says. A multi call made from inside a callback returns `CURLM_RECURSIVE_API_CALL` (`8`). On libcurl older than 8.16.0, a timer callback that fails inside `curl_multi_add_handle()` leaves the rejected handle in libcurl's timer tree and the next call on that multi hangs or crashes; 8.16.0 fixed it upstream, and the suite skips that test below it. On libcurl older than 8.10.0, `curlMultiSocketAction($multi, CURL_SOCKET_TIMEOUT, 0)` skips the timer callback when it leaves no expiry pending, so that `-1` never comes; [8.10.0 fixed it upstream](https://github.com/curl/curl/pull/14561). A loop that drops its deadline when the timer fires, as the one above does, needs nothing. A transfer timeout (`CURLOPT_TIMEOUT_MS`) keeps an expiry pending, and the callback then fires the same way on every version.
 
 pcurl's per-multi state (the callbacks, the two data values, the `curlMultiAssign()` values) is released when ext-curl frees the `CurlMultiHandle`, and at request shutdown. The cycle collector cannot see into that state, so a callback that captures its own multi (`use ($multi)`) keeps the multi alive until you set that option back to `null` or the request ends.
 
@@ -281,11 +281,11 @@ php -n -d extension="$PWD/../pcurl-build/modules/pcurl.so" vendor/bin/pest
 ```
 
 ```console
-Tests:    73 passed (382 assertions)
+Tests:    73 passed (383 assertions)
 Duration: 0.65s
 ```
 
-`-n` skips your `php.ini`, so the suite tests the build and not an installed `pcurl.so`; without it, a PHP that already loads pcurl warns `Module "pcurl" is already loaded` and keeps the installed one. Where ext/curl is a shared extension rather than built in, as on Debian packaging, add `-d extension=curl` before the pcurl one, since `-n` dropped the ini that loads it; the same goes for the extensions Pest needs (`mbstring`, `dom`, `tokenizer`) where they are shared. A module only loads in the PHP whose `phpize` built it: for Homebrew's ZTS build, run `phpize` and pass `--with-php-config` from `/opt/homebrew/opt/php@8.4-zts/bin`. One test skips on libcurl older than 8.16.0, and the `CURLM_ABORTED_BY_CALLBACK` assertions skip below 7.81.0.
+`-n` skips your `php.ini`, so the suite tests the build and not an installed `pcurl.so`; without it, a PHP that already loads pcurl warns `Module "pcurl" is already loaded` and keeps the installed one. Where ext/curl is a shared extension rather than built in, as on Debian packaging, add `-d extension=curl` before the pcurl one, since `-n` dropped the ini that loads it; the same goes for the extensions Pest needs (`mbstring`, `dom`, `tokenizer`) where they are shared. A module only loads in the PHP whose `phpize` built it: for Homebrew's ZTS build, run `phpize` and pass `--with-php-config` from `/opt/homebrew/opt/php@8.4-zts/bin`. One test skips on libcurl older than 8.16.0, and the `CURLM_ABORTED_BY_CALLBACK` assertions skip below 7.81.0. The suite's handles carry a 30 s `CURLOPT_TIMEOUT_MS`, so the timer tests see the same callbacks on libcurl older than 8.10.0.
 
 ## Contributing
 

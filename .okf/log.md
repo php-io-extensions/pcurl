@@ -2,6 +2,7 @@
 
 ## 2026-10-28
 
+* **Tests on libcurl < 8.10**: CI's Ubuntu 24.04 legs (libcurl 8.5.0) failed four `TimerCallbackTest` tests because the timer callback never ran after `curlMultiSocketAction($m, CURL_SOCKET_TIMEOUT, 0)`. A C program calling libcurl 8.5.0 directly gets the same silence; pcurl forwards what libcurl reports. Before 8.10.0 that action clears libcurl's last reported timeout, and with no expiry left pending libcurl sends nothing, not even `-1`; curl a58b50f (PR 14561) changed it in 8.10.0. The suite's handles had no transfer timeout, so nothing stayed pending. `easyFor()` now sets `CURLOPT_TIMEOUT_MS` to 30 000; the assertions are unchanged. Recorded in [Pcurl\Multi](/api/multi.md) and the README, whose suite count is now 383 assertions. Suite: 73 passed on Homebrew PHP 8.4 NTS and ZTS (libcurl 8.23.0); 72 passed, 1 skipped (the 8.16 test) on Ubuntu 24.04 x86_64 PHP 8.4 NTS (8.5.0) and the Pi 5 PHP 8.4 ZTS (8.14.1).
 * **Version**: 0.11.0 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`; `ide/0.11.0/` replaces `ide/0.10.5/` (identical stubs). Promoted with the Venusian 0.11 ecosystem. No API or behaviour change; built and loaded on Homebrew PHP 8.4 NTS and ZTS.
 
 ## 2026-10-12
