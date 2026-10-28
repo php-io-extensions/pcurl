@@ -1,8 +1,8 @@
 # Directory Update Log
 
-## 2026-10-14
+## 2026-10-28
 
-* **TimerCallbackTest vs libcurl 8.5**: Ubuntu 24.04 CI (libcurl 8.5.0) failed 4 tests that assumed `curlMultiSocketAction(CURL_SOCKET_TIMEOUT)` always invokes `CURLMOPT_TIMERFUNCTION`. It doesn't: 8.5's `multi_socket` memsets `timer_lastcall` to `{0,0}` on `CURL_SOCKET_TIMEOUT`, then `Curl_update_timer` skips the callback when the new timeout is `-1` (already "none"). A localhost transfer with no `CURLOPT_TIMEOUT` looks exactly like that after `EXPIRE_RUN_NOW` is consumed — add_handle still fires `0`, `curl_multi_exec` still fires, completion never sends `-1`. 8.11 (`a58b50f`) split that bookkeeping into `last_expire_ts` (cleared) and `last_timeout_ms` (kept), so the same TIMEOUT call reports `-1`; Homebrew 8.22 and the Pi's 8.14.1 follow that path and were green. The tests now put `CURLOPT_TIMEOUT_MS` on the easy so 8.5 has an expire left to report. C unchanged: the trampoline was firing whenever libcurl asked.
+* **Version**: 0.11.0 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`; `ide/0.11.0/` replaces `ide/0.10.5/` (identical stubs). Promoted with the Venusian 0.11 ecosystem. No API or behaviour change; built and loaded on Homebrew PHP 8.4 NTS and ZTS.
 
 ## 2026-10-12
 
@@ -19,13 +19,12 @@
 
 ## 2026-10-09
 
-* `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.
 * **Version**: 0.10.2 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`. No API change; `ide/0.10.1/` stays current. Carries the Linux link fix below, which 0.10.1 shipped without.
 
 ## 2026-10-08
 * **Version**: 0.10.1 in `config.json`, `composer.json`, `PHP_PCURL_VERSION`; `ide/0.10.1/` replaces `ide/0.10.0/`.
 * **Decision reversed (Angel)**: `curlSocketStream(int $s)` added. The 2026-09-22 "no stream helper, userland uses `php://fd/N`" call predates the measurement that PHP serves `php://fd` under the CLI SAPI only: inside a phpmicro binary (`PHP_SAPI` `micro`) the framework's pcurl driver could not wrap curl's sockets, threw from the socket callback, and curl aborted the multi handle (`CURLM_ABORTED_BY_CALLBACK` on every later add). The method is `dup` + `php_stream_fopen_from_fd`, what `php://fd` does without the gate.
-* **Linux link**: the shared extension links no libcurl on Linux either; the `darwin*` case in both `config.m4` files is gone. A linked `libcurl.so.4` made pcurl's versioned references bind to the system library inside a static glibc micro runtime (a `venusian build` for Linux) while ext-curl's handles came from the runtime's libcurl; the first socket action segfaulted. Unversioned references bind to whichever libcurl the process carries.
+* **Linux link**: the shared extension links no libcurl on Linux either; the `darwin*` case in both `config.m4` files is gone. A linked `libcurl.so.4` made pcurl's versioned references bind to the system library inside a static glibc micro runtime while ext-curl's handles came from the runtime's libcurl; the first socket action segfaulted. Unversioned references bind to whichever libcurl the process carries.
 * **macOS link**: the shared extension links no libcurl on Darwin (`clang/config.m4`, `ext/config.m4`); `curl_multi_*` resolve from the host at load time, so pcurl always calls the libcurl ext-curl was built with (Homebrew's dylib, or the static one inside a micro binary) and never a second copy.
 
 ## 2026-09-29

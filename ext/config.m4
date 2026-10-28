@@ -24,7 +24,7 @@ if test "$PHP_PCURL" = "yes"; then
 			dnl process already carries, never a second copy. The shared extension links no
 			dnl libcurl on any OS: curl_multi_* resolve at load time from the host, which is the
 			dnl libcurl PHP or its ext-curl links (Homebrew's dylib, the distribution's .so) and
-			dnl the libcurl compiled into a static micro binary (a venusian build). A linked copy
+			dnl the libcurl compiled into a static micro binary. A linked copy
 			dnl on Linux binds pcurl's versioned references to the system .so while ext-curl's
 			dnl handles come from the static one. Headers come from pkg-config either way.
 			PHP_EVAL_INCLINE($PHP_LIBCURL_INCS)

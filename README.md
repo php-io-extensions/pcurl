@@ -136,8 +136,6 @@ brew install php@8.4 curl pkgconf
 export PKG_CONFIG_PATH="$(brew --prefix curl)/lib/pkgconfig"
 ```
 
-`venusian build` reads the same packages from `extra.venusian.system` in `composer.json`.
-
 ## Installation
 
 ### With PHP PIE (recommended)
@@ -186,7 +184,7 @@ pcurl
 libcurl's multi socket API bound 1:1 into PHP on top of ext-curl handles
 pcurl => enabled
 Author => Project Saturn Studios, LLC
-Version => 0.10.x
+Version => 0.11.x
 Build Date => Oct 12 2026 13:41:34
 Powered by Zephir => Version 1.6.1-$Id$
 ```
